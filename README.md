@@ -14,5 +14,6 @@ This ROS 2 package (`pioneer_control`) interfaces with CoppeliaSim to control a 
    cd ~/ros2_ws
    colcon build --packages-select pioneer_control
    source install/setup.bash
+## Video
+https://youtu.be/rxl89i-7EvA
 
-   
