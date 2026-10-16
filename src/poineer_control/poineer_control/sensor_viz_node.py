@@ -1,22 +1,15 @@
 #!/usr/bin/env python3
 import rclpy
 from rclpy.node import Node
-from std_msgs.msg import Float32MultiArray, String
+from std_msgs.msg import   Float32MultiArray  , String
 import matplotlib.pyplot as plt
 
 
 class SensorVizNode(Node):
     def __init__(self):
         super().__init__('sensor_viz_node')
-
-        # use_array:=false (default) -> /ultrasonic_sensors is std_msgs/String (CSV)
-        # use_array:=true            -> /ultrasonic_sensors is Float32MultiArray
-        self.declare_parameter('use_array', False)
-        use_array = self.get_parameter('use_array').value
-
-
         self.subscription = self.create_subscription(
-                String, '/ultrasonic_sensors', self.csv_callback, 10)
+                Float32MultiArray, '/ultrasonic_sensors', self.array_callback, 10)
 
         # Store latest 16 sensor readings
         self.num_sensors = 16
@@ -30,17 +23,17 @@ class SensorVizNode(Node):
         # 20 Hz timer to redraw the plot
         self.timer = self.create_timer(0.05, self.update_plot)
         self.get_logger().info(
-            f'Sensor Visualization Node Started ({"array" if use_array else "CSV string"} mode). '
+            f'Sensor Visualization Node Started CSV string mode). '
             'Waiting for data...')
 
-    def csv_callback(self, msg: String):
-        try:
-            vals = [float(x) for x in msg.data.split(',')]
-        except ValueError:
-            self.get_logger().warn('Could not parse sensor message')
-            return
-        if len(vals) == self.num_sensors:
-            self.sensor_readings = vals
+    # def csv_callback(self, msg: String):
+    #     try:
+    #         vals = [float(x) for x in msg.data.split(',')]
+    #     except ValueError:
+    #         self.get_logger().warn('Could not parse sensor message')
+    #         return
+    #     if len(vals) == self.num_sensors:
+    #         self.sensor_readings = vals
 
     def array_callback(self, msg: Float32MultiArray):
         if len(msg.data) == self.num_sensors:
